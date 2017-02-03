@@ -1,0 +1,23 @@
+{
+  "name": "react-native-camera",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WaffleStudios/react-native-json-form"
+  },
+  "version": "0.1",
+  "description": "A React Native component that builds a form using a predefined JSON schema.  Used to quickly build flexible forms with REST API compatibility.",
+  "author": "Rob Stemen <rob.stemen@gmail.com> (https://twitter.com/RobStemen)",
+  "nativePackage": true,
+  "license": "GPL-3.0",
+  "homepage": "https://github.com/WaffleStudios/react-native-json-form",
+  "keywords": [
+    "react-native",
+    "react",
+    "native",
+    "form",
+    "form builder",
+    "json form",
+    "json schema",
+    "json"
+  ]
+}
