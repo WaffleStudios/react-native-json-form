@@ -34,7 +34,7 @@ export default class JSONForm extends Component {
       this.state = initialProps;
   }
 
-  getElement(title, name, value, type, from, required, key) {
+  getElement(title, name, type, from, required, key) {
     switch(type) {
       case("text"):
         return(
@@ -42,7 +42,7 @@ export default class JSONForm extends Component {
             <View>
               <Text style={styles.header}>{title}</Text>
               <InputGroup borderType='regular' style={styles.container}>
-                <Input value={this.state[name] !== undefined ? this.state[name] : value} onChangeText={(val) => this.setState({[name]: val})} placeholder={title}/>
+                <Input value={this.state[name]} onChangeText={(val) => this.setState({[name]: val})} placeholder={title}/>
               </InputGroup>
             </View>
           </ListItem>
@@ -68,7 +68,7 @@ export default class JSONForm extends Component {
             <View>
               <Text style={styles.header}>{title}</Text>
               <DatePicker
-                date={this.state[name] !== undefined ? new Date(this.state[name]) : new Date(value)}
+                date={this.state[name] != undefined ? new Date(this.state[name]) : undefined}
                 setDate={(date) => this.setState({[name]: date}) } />
             </View>
           </ListItem>
@@ -76,7 +76,7 @@ export default class JSONForm extends Component {
       case("checkbox"):
         return(
           <ListItem key={key}>
-            <CheckBox ref={name} checked={this.state[name] !== undefined ? this.state[name] : value} onPress={() => this.setState({[name]: !this.state[name]})} />
+            <CheckBox ref={name} checked={this.state[name]} onPress={() => this.setState({[name]: !this.state[name]})} />
             <Text>{title}</Text>
           </ListItem>
         );
@@ -88,7 +88,7 @@ export default class JSONForm extends Component {
       <View>
         <List>
           {this.props.data.map((data, key) => {
-            return this.getElement(data.title, data.name, data.value, data.type, data.from, data.required, key);
+            return this.getElement(data.title, data.name, data.type, data.from, data.required, key);
           })}
           <ListItem>
             <Button block success ref={(submit) => this._submitButton = submit} onPress={() => this.props.formHandler(this.state)}>Submit</Button>
