@@ -68,7 +68,7 @@ export default class JSONForm extends Component {
             <View>
               <Text style={styles.header}>{title}</Text>
               <DatePicker
-                date={this.state[name] != undefined ? new Date(this.state[name]) : undefined}
+                date={this.state[name] ? new Date(this.state[name]) : undefined}
                 setDate={(date) => this.setState({[name]: date}) } />
             </View>
           </ListItem>
