@@ -28,6 +28,9 @@ import styles from './FormStyles';
 export default class JSONForm extends Component {
   constructor(props) {
       super(props);
+
+      // Map the initial values, if set, to their respective state values.
+      // This allows the correct values to be passed if the form is submitted with no edits made.
       var initialProps = {};
       this.props.data.map((data, key) => initialProps[data.name] = data.value );
 
