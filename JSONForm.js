@@ -83,6 +83,22 @@ export default class JSONForm extends Component {
             <Text>{title}</Text>
           </ListItem>
         );
+      case("radio"):
+        return(
+          <ListItem key={key}>
+            <View>
+              <Text style={styles.header}>{title}</Text>
+              <List dataArray={from}
+                  renderRow={(item) =>
+                      <ListItem>
+                          <Radio selected={this.state[name] == item.key} onPress={() => this.setState({[name]: item.key})} />
+                          <Text>{item.value}</Text>
+                      </ListItem>
+                  }>
+              </List>
+            </View>
+          </ListItem>
+        )
     }
   }
 
@@ -106,7 +122,7 @@ JSONForm.propTypes = {
     data: React.PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(['text', 'select', 'date', 'checkbox']).isRequired,
+      type: PropTypes.oneOf(['text', 'select', 'date', 'checkbox', 'radio']).isRequired,
       required: PropTypes.bool
     })).isRequired,
     formHandler: PropTypes.func.isRequired
