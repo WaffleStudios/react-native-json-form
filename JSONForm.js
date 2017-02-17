@@ -53,7 +53,7 @@ export default class JSONForm extends Component {
             <View>
               <Text style={styles.header}>{title}</Text>
               <Picker
-                selectedValue={value}
+                selectedValue={this.state[name]}
                 onValueChange={(lang) => this.setState({[name]: lang})}>
                 {from.map((item, index) => {
                     return <Picker.Item key={index} label={item.value} value={item.key} />
