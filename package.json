@@ -26,7 +26,7 @@
     "url": "https://github.com/WaffleStudios/react-native-json-form/issues"
   },
   "dependencies": {
-    "native-base": "^0.5.18"
+    "native-base": "^2.2.0"
   },
   "homepage": "https://github.com/WaffleStudios/react-native-json-form#readme"
 }
