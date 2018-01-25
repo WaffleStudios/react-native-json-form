@@ -46,7 +46,7 @@ export default class JSONForm extends Component {
             <View>
               <Text style={styles.header}>{title}</Text>
               <InputGroup borderType='regular' style={styles.container}>
-                <Input value={this.state[name]} onChangeText={(val) => this.setState({[name]: val})} placeholder={title}/>
+                <Input value={this.state[name]} onChangeText={(newValue) => updateField(name, newValue)} placeholder={title}/>
               </InputGroup>
             </View>
           </ListItem>
@@ -58,7 +58,7 @@ export default class JSONForm extends Component {
               <Text style={styles.header}>{title}</Text>
               <Picker
                 selectedValue={this.state[name]}
-                onValueChange={(lang) => this.setState({[name]: lang})}>
+                onValueChange={(newValue) => updateField(name, newValue)}>
                 {from.map((item, index) => {
                     return <Picker.Item key={index} label={item.value} value={item.key} />
                   })}
@@ -73,14 +73,14 @@ export default class JSONForm extends Component {
               <Text style={styles.header}>{title}</Text>
               <DatePicker
                 date={this.state[name] ? new Date(this.state[name]) : undefined}
-                setDate={(date) => this.setState({[name]: date}) } />
+                setDate={(date) => updateField(name, date) } />
             </View>
           </ListItem>
         );
       case("checkbox"):
         return(
           <ListItem key={key}>
-            <CheckBox ref={name} checked={this.state[name]} onPress={() => this.setState({[name]: !this.state[name]})} />
+            <CheckBox ref={name} checked={this.state[name]} onPress={() => updateField(name, !this.state[name])} />
             <Text>{title}</Text>
           </ListItem>
         );
@@ -92,7 +92,7 @@ export default class JSONForm extends Component {
               <List dataArray={from}
                   renderRow={(item) =>
                       <ListItem>
-                          <Radio selected={this.state[name] == item.key} onPress={() => this.setState({[name]: item.key})} />
+                          <Radio selected={this.state[name] == item.key} onPress={() => updateField(name, item.key)} />
                           <Text>{item.value}</Text>
                       </ListItem>
                   }>
@@ -101,6 +101,16 @@ export default class JSONForm extends Component {
           </ListItem>
         )
     }
+  }
+
+  updateField(name, value) {
+    var props = this.state;
+    props[name] = value
+    if(this.props.submitOnChange) {
+      this.props.formHandler(props);
+    }
+
+    this.setState(props);
   }
 
   render() {
