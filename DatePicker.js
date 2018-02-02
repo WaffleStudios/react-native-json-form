@@ -33,10 +33,7 @@ export default class JSONForm extends React.Component {
         return(
           <View style={styles.indent}>
             <TouchableOpacity
-              onPress={() => {
-                this.props.setDate(new Date());
-                this.setState({showPicker: true})
-              }}>
+              onPress={() => this.setState({showPicker: true})}>
               <Text>{this.props.date != undefined ? this.formattedDate() : "Add Date"}</Text>
             </TouchableOpacity>
           </View>
