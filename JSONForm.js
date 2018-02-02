@@ -1,22 +1,17 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import {
   AppRegistry,
   DatePickerIOS,
   Picker,
   StyleSheet,
   Text,
+  TextInput,
   ScrollView,
   TouchableOpacity,
   View
 } from 'react-native';
 import {
-  Button,
   CheckBox,
-  Container,
-  Content,
-  Header,
-  Input,
-  InputGroup,
   List,
   ListItem,
   Radio
@@ -26,7 +21,7 @@ import DatePicker from './DatePicker';
 
 import styles from './FormStyles';
 
-export default class JSONForm extends Component {
+export default class JSONForm extends React.Component {
   constructor(props) {
       super(props);
 
@@ -41,64 +36,58 @@ export default class JSONForm extends Component {
   getElement(title, name, type, from, required, key) {
     switch(type) {
       case("text"):
+      case("textarea"):
         return(
-          <ListItem key={key}>
-            <View>
-              <Text style={styles.header}>{title}</Text>
-              <InputGroup borderType='regular' style={styles.container}>
-                <Input value={this.state[name]} onChangeText={(newValue) => updateField(name, newValue)} placeholder={title}/>
-              </InputGroup>
-            </View>
-          </ListItem>
+          <View key={key} style={styles.card}>
+            <Text style={styles.header}>{title}</Text>
+            <TextInput value={this.state[name]} onChangeText={(newValue) => this.updateField(name, newValue)} placeholder={title} selectTextOnFocus={true} multiline={type == "textarea"} />
+          </View>
         );
       case("select"):
         return(
-          <ListItem key={key}>
-            <View>
-              <Text style={styles.header}>{title}</Text>
-              <Picker
-                selectedValue={this.state[name]}
-                onValueChange={(newValue) => updateField(name, newValue)}>
-                {from.map((item, index) => {
-                    return <Picker.Item key={index} label={item.value} value={item.key} />
-                  })}
-              </Picker>
-            </View>
-          </ListItem>
+          <View key={key} style={styles.card}>
+            <Text style={styles.header}>{title}</Text>
+            <Picker
+              selectedValue={this.state[name]}
+              onValueChange={(newValue) => this.updateField(name, newValue)}>
+              {from.map((item, index) => {
+                  return <Picker.Item key={index} label={item.value} value={item.key} />
+                })}
+            </Picker>
+          </View>
         );
       case("date"):
+      case("time"):
+      case("datetime"):
         return(
-          <ListItem key={key}>
-            <View>
-              <Text style={styles.header}>{title}</Text>
-              <DatePicker
-                date={this.state[name] ? new Date(this.state[name]) : undefined}
-                setDate={(date) => updateField(name, date) } />
-            </View>
-          </ListItem>
+          <View key={key} style={styles.card}>
+            <Text style={styles.header}>{title}</Text>
+            <DatePicker
+              mode={type}
+              date={this.state[name] ? new Date(this.state[name]) : undefined}
+              setDate={(date) => this.updateField(name, date) } />
+          </View>
         );
       case("checkbox"):
         return(
-          <ListItem key={key}>
-            <CheckBox ref={name} checked={this.state[name]} onPress={() => updateField(name, !this.state[name])} />
+          <View key={key} style={styles.card}>
+            <CheckBox ref={name} checked={this.state[name]} onPress={() => this.updateField(name, !this.state[name])} />
             <Text>{title}</Text>
-          </ListItem>
+          </View>
         );
       case("radio"):
         return(
-          <ListItem key={key}>
-            <View>
-              <Text style={styles.header}>{title}</Text>
-              <List dataArray={from}
-                  renderRow={(item) =>
-                      <ListItem>
-                          <Radio selected={this.state[name] == item.key} onPress={() => updateField(name, item.key)} />
-                          <Text>{item.value}</Text>
-                      </ListItem>
-                  }>
-              </List>
-            </View>
-          </ListItem>
+          <View key={key} style={styles.card}>
+            <Text style={styles.header}>{title}</Text>
+            <List dataArray={from}
+                renderRow={(item) =>
+                    <ListItem>
+                        <Radio selected={this.state[name] == item.key} onPress={() => this.updateField(name, item.key)} />
+                        <Text>{item.value}</Text>
+                    </ListItem>
+                }>
+            </List>
+          </View>
         )
     }
   }
@@ -115,26 +104,17 @@ export default class JSONForm extends Component {
 
   render() {
     return (
-      <View>
-        <List>
-          {this.props.data.map((data, key) => {
+      <ScrollView style={this.props.style}>
+        {
+          this.props.data.map((data, key) => {
             return this.getElement(data.title, data.name, data.type, data.from, data.required, key);
-          })}
-          <ListItem>
-            <Button block success ref={(submit) => this._submitButton = submit} onPress={() => this.props.formHandler(this.state)}>Submit</Button>
-          </ListItem>
-        </List>
-      </View>
+          })
+        }
+        <TouchableOpacity onPress={() => this.props.formHandler(this.state)} style={styles.submitButton}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+      </ScrollView>
     );
   }
-}
 
-JSONForm.propTypes = {
-    data: React.PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(['text', 'select', 'date', 'checkbox', 'radio']).isRequired,
-      required: PropTypes.bool
-    })).isRequired,
-    formHandler: PropTypes.func.isRequired
 }

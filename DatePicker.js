@@ -1,34 +1,21 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 
 import {
   DatePickerAndroid,
   DatePickerIOS,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
+  TimePickerAndroid,
   TouchableOpacity,
   View
 } from 'react-native';
 
-import {
-  Button,
-  CheckBox,
-  Container,
-  Content,
-  Header,
-  Input,
-  InputGroup,
-  List,
-  ListItem,
-} from 'native-base';
-
 import styles from './FormStyles';
 
-export default class JSONForm extends Component {
-  propTypes: {
-    date: PropTypes.date,
-    setDate: PropTypes.func.isRequired
+export default class JSONForm extends React.Component {
+  static defaultProps = {
+    mode: "date"
   }
 
   constructor(props) {
@@ -45,10 +32,13 @@ export default class JSONForm extends Component {
       if(!this.state.showPicker) {
         return(
           <View style={styles.indent}>
-            <Button
-              onPress={() => this.setState({showPicker: true})}>
-              {this.props.date != undefined ? this.formattedDate() : "Add Date"}
-            </Button>
+            <TouchableOpacity
+              onPress={() => {
+                this.props.setDate(new Date());
+                this.setState({showPicker: true})
+              }}>
+              <Text>{this.props.date != undefined ? this.formattedDate() : "Add Date"}</Text>
+            </TouchableOpacity>
           </View>
         );
       } else {
@@ -56,7 +46,7 @@ export default class JSONForm extends Component {
           <View>
             <DatePickerIOS
               date={this.props.date != undefined ? this.props.date : new Date()}
-              mode="date"
+              mode={this.props.mode}
               onDateChange={ this.props.setDate }
             />
             <View style={{
@@ -64,24 +54,28 @@ export default class JSONForm extends Component {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-              <Button danger
+              <TouchableOpacity
                 onPress={() => {
                   this.props.setDate(undefined);
                   this.setState({showPicker: false})
-              }}>Clear</Button>
-              <Button
-                onPress={() => this.setState({showPicker: false})}>Submit</Button>
+              }}>
+                  <Text style={{color: "red"}}>Clear</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.setState({showPicker: false})}>
+                <Text>Submit</Text>
+              </TouchableOpacity>
             </View>
           </View>
         );
       }
     } else {
-      return (
+      return(
         <View style={styles.indent}>
-          <Button
-            onPress={this.showPicker.bind(this, {date: this.state.simpleDate})}>
-            {this.props.date != undefined ? this.formattedDate() : "Add Date"}
-          </Button>
+          <TouchableOpacity
+            onPress={this.showPicker.bind(this, {date: this.props.date})}>
+            <Text>{this.props.date != undefined ? this.formattedDate() : "Add Date"}</Text>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -91,28 +85,94 @@ export default class JSONForm extends Component {
   // This formats a date string in a way that is compatible to the year 9999.
   // By that point, I am dead, and this code is someone else's problem
   formattedDate() {
-    var mm = this.props.date.getMonth() + 1;
-    var dd = this.props.date.getDate();
-    var yyyy = this.props.date.getFullYear();
-    var date = mm + '/' + dd + '/' + yyyy;
+    var month = this.props.date.getMonth() + 1;
+    var day = this.props.date.getDate();
+    var year = this.props.date.getFullYear();
+    var date = month + '/' + day + '/' + year;
 
-    return date;
+    var hours = this.props.date.getHours();
+    var minutes = this.props.date.getMinutes();
+    var amPm = hours < 12 ? "AM" : "PM"
+    if(hours == 0) {
+      hours = 12
+    } else if(hours > 12) {
+      hours -= 12
+    }
+
+    if(minutes < 10) {
+      minutes = "0" + minutes
+    }
+
+    var time = hours + ':' + minutes + ' ' + amPm
+
+    if(this.props.mode == "date") {
+      return date;
+    } else if(this.props.mode == "time") {
+      return time;
+    } else {
+      return date + " " + time;
+    }
   }
 
   // Android only.  Handles date picking.  Selecting a date, then hitting "OK" will save the date, selecting "Cancel" will clear the date.
-  showPicker = async (options) => {
+  showPicker(options) {
+    if(["date", "datetime"].includes(this.props.mode)) {
+      this.showDatePicker(options);
+    } else {
+      this.showTimePicker(options);
+    }
+  }
+
+  showDatePicker = async (options) => {
+    if(["date", "datetime"].includes(this.props.mode)) {
+      try {
+        const {action, year, month, day} = await DatePickerAndroid.open(options);
+        if (action === DatePickerAndroid.dismissedAction) {
+          this.props.setDate(undefined);
+        } else {
+          var date = new Date(year, month, day);
+          if(this.props.mode == "date") {
+            this.props.setDate(date);
+          } else {
+            this.showTimePicker({date: date});
+          }
+        }
+      } catch ({code, message}) {
+        console.warn('Cannot Open Date Picker: ', message);
+      }
+    }
+  }
+
+  showTimePicker = async (options) => {
     try {
-      const {action, year, month, day} = await DatePickerAndroid.open(options);
-      if (action === DatePickerAndroid.dismissedAction) {
-        this.props.setDate(undefined);
+      var date = options.date;
+      if(!date) {
+        date = new Date();
+      }
+
+      const {action, hour, minute} = await TimePickerAndroid.open({
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+        is24Hour: false
+      });
+
+      if (action == TimePickerAndroid.dismissedAction) {
+        if(this.props.mode == "time") {
+          this.props.setDate(undefined)
+        } else {
+          this.showDatePicker({date: date})
+        }
       } else {
-        var date = new Date(year, month, day);
+        date.setHours(hour);
+        date.setMinutes(minute);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
         this.props.setDate(date);
       }
     } catch ({code, message}) {
-      console.warn(`Error in example '${stateKey}': `, message);
-    }
-  };
+      console.warn('Cannot Open Time Picker: ', message);
+    };
+  }
 
   render() {
     return this.datePicker();
