@@ -1,6 +1,6 @@
 {
   "name": "react-native-json-form",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A React Native component that builds a form using a predefined JSON schema.  Used to quickly build flexible forms with REST API compatibility.",
   "main": "index.js",
   "scripts": {
