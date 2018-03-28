@@ -23,10 +23,12 @@ export default StyleSheet.create({
     minHeight: 100,
     justifyContent: "center",
     margin: 5,
-    padding: 10,
     borderColor: "lightgray",
     borderWidth: 0.5,
     backgroundColor: "white"
+  },
+  innerCard: {
+    padding: 10
   },
   submitButton: {
     height: 50,
