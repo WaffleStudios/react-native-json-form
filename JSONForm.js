@@ -22,6 +22,10 @@ import DatePicker from './DatePicker';
 import styles from './FormStyles';
 
 export default class JSONForm extends React.Component {
+  static defaultProps = {
+    submitButtonText: "Submit"
+  }
+
   constructor(props) {
       super(props);
 
@@ -39,21 +43,25 @@ export default class JSONForm extends React.Component {
       case("textarea"):
         return(
           <View key={key} style={styles.card}>
-            <Text style={styles.header}>{title}</Text>
-            <TextInput value={this.state[name]} onChangeText={(newValue) => this.updateField(name, newValue)} placeholder={title} selectTextOnFocus={true} multiline={type == "textarea"} />
+            <View style={styles.innerCard}>
+              <Text style={styles.header}>{title}</Text>
+              <TextInput value={this.state[name]} onChangeText={(newValue) => this.updateField(name, newValue)} placeholder={title} selectTextOnFocus={true} multiline={type == "textarea"} />
+            </View>
           </View>
         );
       case("select"):
         return(
           <View key={key} style={styles.card}>
-            <Text style={styles.header}>{title}</Text>
-            <Picker
-              selectedValue={this.state[name]}
-              onValueChange={(newValue) => this.updateField(name, newValue)}>
-              {from.map((item, index) => {
-                  return <Picker.Item key={index} label={item.value} value={item.key} />
-                })}
-            </Picker>
+            <View style={styles.innerCard}>
+              <Text style={styles.header}>{title}</Text>
+              <Picker
+                selectedValue={this.state[name]}
+                onValueChange={(newValue) => this.updateField(name, newValue)}>
+                {from.map((item, index) => {
+                    return <Picker.Item key={index} label={item.value} value={item.key} />
+                  })}
+              </Picker>
+            </View>
           </View>
         );
       case("date"):
@@ -61,32 +69,38 @@ export default class JSONForm extends React.Component {
       case("datetime"):
         return(
           <View key={key} style={styles.card}>
-            <Text style={styles.header}>{title}</Text>
-            <DatePicker
-              mode={type}
-              date={this.state[name] ? new Date(this.state[name]) : undefined}
-              setDate={(date) => this.updateField(name, date) } />
+            <View style={styles.innerCard}>
+              <Text style={styles.header}>{title}</Text>
+              <DatePicker
+                mode={type}
+                date={this.state[name] ? new Date(this.state[name]) : undefined}
+                setDate={(date) => this.updateField(name, date) } />
+            </View>
           </View>
         );
       case("checkbox"):
         return(
           <View key={key} style={styles.card}>
-            <CheckBox ref={name} checked={this.state[name]} onPress={() => this.updateField(name, !this.state[name])} />
-            <Text>{title}</Text>
+            <View style={styles.innerCard}>
+              <CheckBox ref={name} checked={this.state[name]} onPress={() => this.updateField(name, !this.state[name])} />
+              <Text>{title}</Text>
+            </View>
           </View>
         );
       case("radio"):
         return(
           <View key={key} style={styles.card}>
-            <Text style={styles.header}>{title}</Text>
-            <List dataArray={from}
-                renderRow={(item) =>
-                    <ListItem>
-                        <Radio selected={this.state[name] == item.key} onPress={() => this.updateField(name, item.key)} />
-                        <Text>{item.value}</Text>
-                    </ListItem>
-                }>
-            </List>
+            <View style={styles.innerCard}>
+              <Text style={styles.header}>{title}</Text>
+              <List dataArray={from}
+                  renderRow={(item) =>
+                      <ListItem>
+                          <Radio selected={this.state[name] == item.key} onPress={() => this.updateField(name, item.key)} />
+                          <Text>{item.value}</Text>
+                      </ListItem>
+                  }>
+              </List>
+            </View>
           </View>
         )
     }
@@ -104,16 +118,18 @@ export default class JSONForm extends React.Component {
 
   render() {
     return (
-      <ScrollView style={this.props.style}>
-        {
-          this.props.data.map((data, key) => {
-            return this.getElement(data.title, data.name, data.type, data.from, data.required, key);
-          })
-        }
+      <View style={this.props.style}>
+        <ScrollView>
+          {
+            this.props.data.map((data, key) => {
+              return this.getElement(data.title, data.name, data.type, data.from, data.required, key);
+            })
+          }
+        </ScrollView>
         <TouchableOpacity onPress={() => this.props.formHandler(this.state)} style={styles.submitButton}>
-          <Text style={styles.submitButtonText}>Submit</Text>
+          <Text style={styles.submitButtonText}>{this.props.submitButtonText}</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     );
   }
 
