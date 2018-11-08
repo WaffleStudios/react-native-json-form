@@ -45,7 +45,7 @@ export default class JSONForm extends React.Component {
           <View key={key} style={styles.card}>
             <View style={styles.innerCard}>
               <Text style={styles.header}>{title}</Text>
-              <TextInput value={this.state[name]} onChangeText={(newValue) => this.updateField(name, newValue)} placeholder={title} selectTextOnFocus={true} multiline={type == "textarea"} />
+              <TextInput value={this.state[name]} onChangeText={(newValue) => this.updateField(name, newValue)} placeholder="Type here..." selectTextOnFocus={true} multiline={type == "textarea"} />
             </View>
           </View>
         );
