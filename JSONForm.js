@@ -58,7 +58,7 @@ export default class JSONForm extends React.Component {
                 selectedValue={this.state[name]}
                 onValueChange={(newValue) => this.updateField(name, newValue)}>
                 {from.map((item, index) => {
-                    return <Picker.Item key={index} label={item.value} value={item.key} />
+                    return <Picker.Item key={index} label={item.key} value={item.value} />
                   })}
               </Picker>
             </View>
