@@ -28,7 +28,6 @@
   "dependencies": {
     "native-base": "^2.3.7",
     "npm": "^5.8.0",
-    "react": "16.0.0",
     "react-native-vector-icons": "^4.5.0"
   },
   "homepage": "https://github.com/WaffleStudios/react-native-json-form#readme"
