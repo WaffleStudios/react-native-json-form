@@ -44,7 +44,7 @@ export default class JSONForm extends React.Component {
             <DatePickerIOS
               date={this.props.date != undefined ? this.props.date : new Date()}
               mode={this.props.mode}
-              onDateChange={ this.props.setDate }
+              onDateChange={(date) =>  this.props.setDate(this.formatDate(date, "datetime")) }
             />
             <View style={{
               flex: 1,
@@ -81,34 +81,46 @@ export default class JSONForm extends React.Component {
   // Date.toLocaleDateString() causes issues past the year 2038 (https://en.wikipedia.org/wiki/Year_2038_problem ?)
   // This formats a date string in a way that is compatible to the year 9999.
   // By that point, I am dead, and this code is someone else's problem
-  formattedDate() {
-    var month = this.props.date.getMonth() + 1;
-    var day = this.props.date.getDate();
-    var year = this.props.date.getFullYear();
-    var date = month + '/' + day + '/' + year;
+  formatDate(date, mode) {
+    // console.log(date);
+    if(date === undefined) {
+      date = new Date();
+    }
 
-    var hours = this.props.date.getHours();
-    var minutes = this.props.date.getMinutes();
-    var amPm = hours < 12 ? "AM" : "PM"
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var year = date.getFullYear();
+    var formattedDate = month + '/' + day + '/' + year;
+
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var amPm = hours < 12 ? "AM" : "PM";
     if(hours == 0) {
-      hours = 12
+      hours = 12;
     } else if(hours > 12) {
-      hours -= 12
+      hours -= 12;
     }
 
     if(minutes < 10) {
-      minutes = "0" + minutes
+      minutes = "0" + minutes;
     }
 
-    var time = hours + ':' + minutes + ' ' + amPm
+    var formattedTime = hours + ':' + minutes + ' ' + amPm;
 
-    if(this.props.mode == "date") {
-      return date;
-    } else if(this.props.mode == "time") {
-      return time;
+    // console.log(formattedDate);
+    // console.log(formattedTime);
+
+    if(mode == "date") {
+      return formattedDate;
+    } else if(mode == "time") {
+      return formattedTime;
     } else {
-      return date + " " + time;
+      return formattedDate + " " + formattedTime;
     }
+  }
+
+  formattedDate() {
+    return this.formatDate(this.props.date, this.props.mode)
   }
 
   // Android only.  Handles date picking.  Selecting a date, then hitting "OK" will save the date, selecting "Cancel" will clear the date.
@@ -164,7 +176,7 @@ export default class JSONForm extends React.Component {
         date.setMinutes(minute);
         date.setSeconds(0);
         date.setMilliseconds(0);
-        this.props.setDate(date);
+        this.props.setDate(this.formatDate(date, "datetime"));
       }
     } catch ({code, message}) {
       console.warn('Cannot Open Time Picker: ', message);
